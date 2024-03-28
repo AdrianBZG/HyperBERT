@@ -1,0 +1,13 @@
+{
+  "task_name": "node_classification",
+  "base_model_name": "bert-base-uncased",
+  "dataset_name": "cora",
+  "data_base_path": "data/preprocessed/",
+  "batch_size": 32,
+  "max_seq_length": 512,
+  "optimizer": "adam",
+  "learning_rate": 1e-4,
+  "num_epochs": 10,
+  "freeze_encoder": true,
+  "enable_wandb": false
+}
