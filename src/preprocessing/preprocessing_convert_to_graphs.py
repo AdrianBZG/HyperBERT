@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 FILE_PATHS = {
     "cora_co": "data/hyperbert/cora_co/cora_co_graph.pkl",
     "pubmed": "data/hyperbert/pubmed/pubmed_graph.pkl",
-    "dblp_a": "data/hyperbert/dblp_a/dblp_graph.pkl",
+    "dblp_a": "data/hyperbert/dblp_a/dblp_a_graph.pkl",
     "imdb": "data/hyperbert/imdb/imdb_graph.pkl"
 }
 
