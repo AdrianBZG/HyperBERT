@@ -1,8 +1,8 @@
 {
   "task_name": "modality_alignment",
   "base_model_name": "bert-base-uncased",
-  "dataset_name": "cora",
-  "data_base_path": "data/preprocessed/",
+  "dataset_name": "cora_co",
+  "data_base_path": "data/hyperbert/",
   "batch_size": 32,
   "max_seq_length": 512,
   "optimizer": "adam",

@@ -104,36 +104,33 @@ def load_params_from_file(file_path):
     return params
 
 
-def find_k_hop_neighbors(graph, k):
+def find_k_hop_neighbors(graph: nx.DiGraph, k=1):
     """
-    Finds k-hop neighbors for each node in the graph.
+    For each node in the graph, return a dictionary mapping the node
+    to the set of nodes that are reachable in exactly k hops.
 
     Parameters:
-    - graph: A networkx DiGraph instance.
-    - k: The number of hops.
+        graph (nx.DiGraph): The input directed graph.
+        k (int): The number of hops to consider.
 
     Returns:
-    A dictionary where keys are node IDs and values are sets of k-hop neighbor IDs.
+        dict: A dictionary where keys are nodes and values are sets of nodes
+              that are reachable from the key node in exactly k hops.
     """
     k_hop_neighbors = {}
-    for node in tqdm(graph.nodes(), desc=f"Finding {k}-hop neighbors"):
-        # Initialize the set of neighbors with direct (1-hop) successors
-        current_neighbors = set(graph.successors(node))
-        all_neighbors = set(current_neighbors)  # To keep track of all unique neighbors found
-
-        # Iterate to find further neighbors up to k hops
-        for _ in range(1, k):
-            new_neighbors = set()
-            for n in current_neighbors:
-                # Iterate through the successors of current neighbors
-                for nn in graph.successors(n):
-                    # Avoid adding the node itself
-                    if nn != node:
-                        new_neighbors.add(nn)
-                        all_neighbors.add(nn)
-            current_neighbors = new_neighbors
-
-        k_hop_neighbors[node] = all_neighbors
+    
+    # Iterate over all nodes in the graph.
+    for node in graph.nodes():
+        current_hop = {node}  # Start with the node itself.
+        # Iteratively compute neighbors for each hop.
+        for _ in range(k):
+            next_hop = set()
+            for n in current_hop:
+                next_hop.update(graph.successors(n))
+            current_hop = next_hop
+        # Optionally, remove the original node if present.
+        current_hop.discard(node)
+        k_hop_neighbors[node] = current_hop
 
     return k_hop_neighbors
 
@@ -169,27 +166,27 @@ def dense_to_sparse_incidence(incidence_matrix):
 
 
 def hypergraph_from_graph(graph: nx.DiGraph, k=1):
-    # Step 1: Identify 2-hop neighbors for each node
+    # Step 1: Identify k-hop neighbors for each node
     k_hop_neighbors = find_k_hop_neighbors(graph, k)
 
-    # Step 2: Create unique hyperedges
-    hyperedges = []
+    # Step 2: Create unique hyperedges using frozensets for deduplication
+    unique_hyperedges = set()
     for node, neighbors in tqdm(k_hop_neighbors.items(), desc="Creating unique hyperedges"):
-        if neighbors:  # Only consider non-empty sets
-            # Add the set of neighbors as a hyperedge if not already added
-            if not neighbors in hyperedges:
-                hyperedges.append(neighbors)
+        if neighbors:  # Only consider non-empty neighbor sets
+            unique_hyperedges.add(frozenset(neighbors))
+    hyperedges = list(unique_hyperedges)
 
-    # Step 3: Build the hypergraph incidence matrix
+    # Step 3: Build the hypergraph incidence matrix (nodes x hyperedges)
     num_nodes = len(graph.nodes())
     num_hyperedges = len(hyperedges)
     H = np.zeros((num_nodes, num_hyperedges))
 
-    node_list = list(graph.nodes())  # List of nodes to index them
+    node_list = list(graph.nodes())  # Create a consistent ordering of nodes
     for j, hyperedge in tqdm(enumerate(hyperedges), desc="Building hypergraph incidence matrix"):
         for node in hyperedge:
-            i = node_list.index(node)
-            H[i, j] += 1
+            if node in node_list:  # Sanity check (should be always true)
+                i = node_list.index(node)
+                H[i, j] = 1  # Set membership to 1
 
     return H
 

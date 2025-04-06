@@ -167,7 +167,6 @@ wandb/
 **/**/__pycache__
 __pycache__
 data/*
-data/preprocessed/*.pkl
 model_checkpoints/*.pt
 model_checkpoints/
 **/*.pt

@@ -17,13 +17,24 @@ logger = logging.getLogger(f"{__name__}")
 
 
 class HyperBertDataset(Dataset):
-    def __init__(self, pyg_graph):
+    def __init__(self, pyg_graph, ds_name):
+        self.ds_name = ds_name
+        assert self.ds_name in ["cora_co", "dblp_a", "imdb", "pubmed"]
         self.graph = pyg_graph
-        self.text = [abstract + " " + title for abstract, title in zip(pyg_graph.abstract, pyg_graph.title)]
+        
+        if self.ds_name == "imdb":
+            # For IMDB, we only have 'title' (no abstract)
+            self.text = list(pyg_graph.title)
+        else:
+            # For other datasets, concatenate abstract and title.
+            self.text = [abstract + " " + title for abstract, title in zip(pyg_graph.abstract, pyg_graph.title)]
+
         self.y = [y.item() for y in pyg_graph.y]
 
         # Safety checks
         assert len(self.text) == len(self.y)
+
+        print(f"Loaded HyperBertDataset with {len(self.text)} samples")
 
     def __getitem__(self, idx):
         sub_hypergraph = get_sub_hypergraph(hypergraph=self.graph,

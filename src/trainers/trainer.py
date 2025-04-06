@@ -31,13 +31,14 @@ def batch_collate_function(batch):
 
 def get_data_loader(config):
     pickle_path = os.path.join(config['data_base_path'],
+                               config["dataset_name"],
                                f'{config["dataset_name"]}_pyg.pkl')
 
     with open(pickle_path, 'rb') as file:
         pyg_graph = pickle.load(file)
         del pyg_graph.edge_index
 
-    dataset = HyperBertDataset(pyg_graph)
+    dataset = HyperBertDataset(pyg_graph, ds_name=config["dataset_name"])
     dataloader = DataLoader(dataset,
                             batch_size=config['batch_size'],
                             shuffle=True,
