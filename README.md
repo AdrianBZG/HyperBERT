@@ -3,7 +3,7 @@
 
 This is the official implementation and dataset of the paper "HyperBERT: Mixing Hypergraph-Aware Layers with Language Models for Node Classification on Text-Attributed Hypergraphs", published at EMNLP 2024.
 
-<img src="https://github.com/AdrianBZG/HyperBERT/figures/hyperbert.png" width="750" alt="HyperBERT Image">
+<img src="https://github.com/AdrianBZG/HyperBERT/blob/add_data/figures/hyperbert.png" width="750" alt="HyperBERT Image">
 
 ## Data
 
