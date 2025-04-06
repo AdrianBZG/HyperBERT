@@ -2,14 +2,14 @@
 import os
 import pickle
 import logging
-from trainers.trainer import get_data_loader  # Assumes this function is defined as provided
+from trainers.trainer import get_data_loader
 
 logging.basicConfig(level=logging.INFO,
                     format='[%(name)s:%(levelname)s] %(message)s')
 logger = logging.getLogger(__name__)
 
 def main():
-    # Base path where your preprocessed PyG pickle files are stored.
+    # Base path where the preprocessed PyG pickle files are stored.
     base_path = os.path.join("data", "hyperbert")
     # List of dataset names to process.
     dataset_names = ["cora_co", "dblp_a", "imdb", "pubmed"]
@@ -23,7 +23,6 @@ def main():
         }
         
         # Load the underlying PyG graph to compute statistics.
-        # Adjust the pickle path if your files are directly under base_path.
         pickle_path = os.path.join(config["data_base_path"], config["dataset_name"], f'{config["dataset_name"]}_pyg.pkl')
         try:
             with open(pickle_path, 'rb') as file:
@@ -41,7 +40,7 @@ def main():
             num_labels = 0
         logger.info(f"Dataset: {ds} - Nodes: {num_nodes}, Hyperedges: {num_hyperedges}, Labels: {num_labels}")
 
-        # Load the dataloader using your get_data_loader function.
+        # Load the dataloader using get_data_loader function.
         try:
             dataloader = get_data_loader(config)
         except Exception as e:
